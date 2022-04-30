@@ -21,6 +21,10 @@ body {
   justify-content: center;
 }
 
+.slider {
+  position: relative;
+}
+
 .custom-slider {
   position: relative;
   display: block;
@@ -48,4 +52,24 @@ body {
   margin-right: auto;
 }
 
-.custom-arrow {}
+.custom-slider-arrow {
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.custom-slider-arrow-left {
+  position: absolute;
+  left: -35px;
+  top: 40%;
+}
+
+.custom-slider-arrow-right {
+  position: absolute;
+  right: -35px;
+  top: 40%;
+}
+
+.custom-slider-arrow img {
+  width: 20px;
+}

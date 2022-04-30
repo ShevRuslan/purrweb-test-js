@@ -2,6 +2,7 @@ class Slider {
   constructor({ parentElement }) {
     this.parentElement = parentElement;
     this.init();
+    this.addArrows();
   }
   init = () => {
     let width = 0;
@@ -17,6 +18,18 @@ class Slider {
     });
     slider += "</div></div>";
     this.parentElement.innerHTML = slider;
+  };
+  addArrows = () => {
+    let leftArrow = document.createElement("button");
+    leftArrow.classList.add("custom-slider-arrow", "custom-slider-arrow-left");
+    leftArrow.innerHTML = `<img src="left-arrow.png"/>`;
+
+    let rightArrow = document.createElement("button");
+    rightArrow.classList.add("custom-slider-arrow", "custom-slider-arrow-right");
+    rightArrow.innerHTML = `<img src="right-arrow.png"/>`;
+
+    this.parentElement.appendChild(leftArrow);
+    this.parentElement.appendChild(rightArrow);
   };
 }
 
