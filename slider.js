@@ -1,10 +1,21 @@
 class Slider {
   constructor({ parentElement }) {
     this.parentElement = parentElement;
-    this.currentElement = 1;
+    this.currentElement = {
+      value: 1,
+    };
+    this.currentElementProxy = new Proxy(this.currentElement, {
+      set: (target, key, value) => {
+        console.log(value);
+        this.changeDots(value);
+        target[key] = value;
+        return true;
+      },
+    });
     this.widthElement = 0;
     this.sliderList = null;
     this.countElement = null;
+    this.loading = false;
     this.init();
     this.cloneSlider();
     this.addArrows();
@@ -53,59 +64,82 @@ class Slider {
     this.parentElement.appendChild(rightArrow);
   };
   prevElement = () => {
-    if (this.currentElement == 1) {
-      let start = this.currentElement * this.widthElement;
-      const int = setInterval(() => {
-        start -= 4;
-        if (start == 0) {
-          this.sliderList.style.transform = `translate3d(-${this.elementWidth * this.countElement}px,0,0)`;
-          this.currentElement = this.countElement;
-          clearInterval(int);
+    if (!this.loading) {
+      requestAnimationFrame(() => {
+        if (this.currentElementProxy.value == 1) {
+          let start = this.currentElementProxy.value * this.widthElement;
+          const int = setInterval(() => {
+            this.loading = true;
+            start -= 4;
+            if (start == 0) {
+              this.sliderList.style.transform = `translate3d(-${this.elementWidth * this.countElement}px,0,0)`;
+              this.currentElementProxy.value = this.countElement;
+              this.loading = false;
+              clearInterval(int);
+            }
+            this.sliderList.style.transform = `translate3d(-${start}px,0,0)`;
+          }, 1);
+        } else {
+          let start = this.currentElementProxy.value * this.widthElement;
+          const int = setInterval(() => {
+            this.loading = true;
+            start -= 4;
+            if (start == (this.currentElementProxy.value - 1) * this.widthElement) {
+              this.currentElementProxy.value--;
+              this.loading = false;
+              clearInterval(int);
+            }
+            this.sliderList.style.transform = `translate3d(-${start}px,0,0)`;
+          }, 1);
         }
-        this.sliderList.style.transform = `translate3d(-${start}px,0,0)`;
-      }, 1);
-    } else {
-      let start = this.currentElement * this.widthElement;
-      const int = setInterval(() => {
-        start -= 4;
-        if (start == (this.currentElement - 1) * this.widthElement) {
-          this.currentElement--;
-          clearInterval(int);
-        }
-        this.sliderList.style.transform = `translate3d(-${start}px,0,0)`;
-      }, 1);
+      });
     }
   };
   nextElement = () => {
-    if (this.currentElement == 6) {
-      this.currentElement++;
-      let start = (this.currentElement - 1) * this.widthElement;
-      const int = setInterval(() => {
-        start += 4;
-        if (start == this.currentElement * this.widthElement) {
-          this.sliderList.style.transform = `translate3d(-${this.elementWidth}px,0,0)`;
-          this.currentElement = 1;
-          clearInterval(int);
+    if (!this.loading) {
+      requestAnimationFrame(() => {
+        if (this.currentElementProxy.value == this.countElement) {
+          let start = this.currentElementProxy.value * this.widthElement;
+          const int = setInterval(() => {
+            this.loading = true;
+            start += 4;
+            if (start == (this.currentElementProxy.value + 1) * this.widthElement) {
+              this.sliderList.style.transform = `translate3d(-${this.elementWidth}px,0,0)`;
+              this.currentElementProxy.value = 1;
+              this.loading = false;
+              clearInterval(int);
+            }
+            this.sliderList.style.transform = `translate3d(-${start}px,0,0)`;
+          }, 1);
+        } else {
+          this.currentElementProxy.value++;
+          let start = (this.currentElementProxy.value - 1) * this.widthElement;
+          const int = setInterval(() => {
+            this.loading = true;
+            start += 4;
+            if (start == this.currentElementProxy.value * this.widthElement) {
+              this.loading = false;
+              clearInterval(int);
+            }
+            this.sliderList.style.transform = `translate3d(-${start}px,0,0)`;
+          }, 1);
         }
-        this.sliderList.style.transform = `translate3d(-${start}px,0,0)`;
-      }, 1);
-    } else {
-      this.currentElement++;
-      let start = (this.currentElement - 1) * this.widthElement;
-      const int = setInterval(() => {
-        start += 4;
-        if (start == this.currentElement * this.widthElement) {
-          clearInterval(int);
-        }
-        this.sliderList.style.transform = `translate3d(-${start}px,0,0)`;
-      }, 1);
-      console.log(this.currentElement);
+      });
     }
   };
   deleteActiveDot = () => {
     let dots = document.querySelectorAll(".dot");
     dots.forEach((dot) => {
       if (dot.classList.contains("dot-active")) dot.classList.remove("dot-active");
+    });
+  };
+  changeDots = (currentElement) => {
+    this.deleteActiveDot();
+    let dots = document.querySelectorAll(".dot");
+    dots.forEach((dot, index) => {
+      if (index + 1 == currentElement) {
+        dot.classList.add("dot-active");
+      }
     });
   };
   createDots = () => {
@@ -124,26 +158,30 @@ class Slider {
     this.parentElement.appendChild(dots);
   };
   changeSlide = (number) => {
-    if (number > this.currentElement) {
-      let start = this.currentElement * this.widthElement;
-      const int = setInterval(() => {
-        start += 4;
-        if (start == number * this.widthElement) {
-          clearInterval(int);
+    if (number != this.currentElementProxy.value) {
+      requestAnimationFrame(() => {
+        if (number > this.currentElementProxy.value) {
+          let start = this.currentElementProxy.value * this.widthElement;
+          const int = setInterval(() => {
+            start += 10;
+            if (start == number * this.widthElement) {
+              clearInterval(int);
+            }
+            this.sliderList.style.transform = `translate3d(-${start}px,0,0)`;
+          }, 1);
+          this.currentElementProxy.value = number;
+        } else {
+          let start = this.currentElementProxy.value * this.widthElement;
+          const int = setInterval(() => {
+            start -= 10;
+            if (start == number * this.widthElement) {
+              clearInterval(int);
+            }
+            this.sliderList.style.transform = `translate3d(-${start}px,0,0)`;
+          }, 1);
+          this.currentElementProxy.value = number;
         }
-        this.sliderList.style.transform = `translate3d(-${start}px,0,0)`;
-      }, 1);
-      this.currentElement = number;
-    } else {
-      let start = this.currentElement * this.widthElement;
-      const int = setInterval(() => {
-        start -= 4;
-        if (start == number * this.widthElement) {
-          clearInterval(int);
-        }
-        this.sliderList.style.transform = `translate3d(-${start}px,0,0)`;
-      }, 1);
-      this.currentElement = number;
+      });
     }
   };
 }
