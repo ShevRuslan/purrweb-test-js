@@ -4,7 +4,7 @@ body {
 }
 
 
-.slider-element {
+h1 {
   padding: 40px 0px;
   text-align: center;
   font-size: 24px;
@@ -12,7 +12,7 @@ body {
   font-weight: bold;
   background-color: white;
   width: 500px;
-
+  margin: 10px;
   float: left;
 }
 
@@ -72,4 +72,31 @@ body {
 
 .custom-slider-arrow img {
   width: 20px;
+}
+
+.dots {
+  position: absolute;
+  bottom: -25px;
+  display: block;
+  width: 100%;
+  text-align: center;
+}
+
+.dot {
+  height: 15px;
+  width: 15px;
+  background-color: #bbb;
+  border-radius: 50%;
+  display: inline-block;
+  background-color: rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  outline: none;
+  border: none;
+  transition: all 0.5s ease-in-out;
+  margin-left: 10px;
+}
+
+.dot-active,
+.dot:hover {
+  background-color: black;
 }
