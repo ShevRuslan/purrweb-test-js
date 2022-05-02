@@ -226,4 +226,4 @@ class Slider {
 }
 
 const parent = document.querySelector(".slider");
-new Slider({ parentElement: parent, speed: 10 });
+new Slider({ parentElement: parent, speed: 2 });
