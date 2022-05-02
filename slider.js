@@ -9,6 +9,7 @@ class Slider {
       },
       childrens: [],
       sliderList: null,
+      sliderTrack: null,
     };
     this.currentElement = {
       value: 1,
@@ -21,7 +22,6 @@ class Slider {
       },
     });
     this.widthElement = 0;
-    this.sliderList = null;
     this.countElement = null;
     this.loading = false;
     this.speed = speed;
@@ -46,22 +46,29 @@ class Slider {
 
     width += 2 * this.widthElement;
 
-    let slider = `<div class="custom-slider-list" style="width:${this.widthElement}px"><div class="custom-slider-track" style="width:${width}px">`;
-    this.elements.childrens.forEach((children) => {
-      slider += children.outerHTML;
-    });
-    slider += "</div></div>";
+    const list = document.createElement("div");
+    list.classList.add("custom-slider-list");
+    list.style.width = `${this.widthElement}px`;
 
-    this.elements.parentElement.innerHTML = slider;
-    this.elements.sliderList = this.elements.parentElement.querySelector(".custom-slider-track");
-    this.elements.sliderList.style.transform = `translate3d(-${this.widthElement}px,0,0)`;
+    const track = document.createElement("div");
+    track.classList.add("custom-slider-track");
+    track.style.width = `${width}px`;
+    track.style.transform = `translate3d(-${this.widthElement}px,0,0)`;
+
+    this.elements.childrens.forEach((children) => {
+      track.appendChild(children);
+    });
+    list.appendChild(track);
+    this.elements.parentElement.appendChild(list);
+    this.elements.sliderList = list;
+    this.elements.sliderTrack = track;
   };
   cloneSlider = () => {
-    const { childrens, parentElement, sliderList } = this.elements;
+    const { childrens, sliderTrack } = this.elements;
     const cloneFirst = childrens[0].cloneNode(true);
     const cloneLast = childrens[childrens.length - 1].cloneNode(true);
-    sliderList.appendChild(cloneFirst);
-    sliderList.insertBefore(cloneLast, this.elements.parentElement.querySelectorAll(".slider-element")[0]);
+    sliderTrack.appendChild(cloneFirst);
+    sliderTrack.insertBefore(cloneLast, this.elements.parentElement.querySelectorAll(".slider-element")[0]);
   };
   createArrows = () => {
     this.elements.arrows.nextArrow = this.createArrow({
@@ -80,7 +87,11 @@ class Slider {
 
     let arrow = document.createElement("button");
     arrow.classList.add("custom-slider-arrow", customClass);
-    arrow.innerHTML = `<img src="${image}"/>`;
+
+    const img = document.createElement("img");
+    img.src = `${image}`;
+
+    arrow.appendChild(img);
     arrow.addEventListener("click", handle);
 
     parentElement.appendChild(arrow);
@@ -89,19 +100,19 @@ class Slider {
   };
   prevElement = () => {
     if (!this.loading) {
-      const { sliderList } = this.elements;
+      const { sliderTrack } = this.elements;
       if (this.currentElementProxy.value == 1) {
         let start = this.currentElementProxy.value * this.widthElement;
         const int = setInterval(() => {
           this.loading = true;
           start -= this.speed;
           if (start == 0) {
-            sliderList.style.transform = `translate3d(-${this.elementWidth * this.countElement}px,0,0)`;
+            sliderTrack.style.transform = `translate3d(-${this.elementWidth * this.countElement}px,0,0)`;
             this.currentElementProxy.value = this.countElement;
             this.loading = false;
             clearInterval(int);
           }
-          sliderList.style.transform = `translate3d(-${start}px,0,0)`;
+          sliderTrack.style.transform = `translate3d(-${start}px,0,0)`;
         }, 1);
       } else {
         let start = this.currentElementProxy.value * this.widthElement;
@@ -113,26 +124,26 @@ class Slider {
             this.loading = false;
             clearInterval(int);
           }
-          sliderList.style.transform = `translate3d(-${start}px,0,0)`;
+          sliderTrack.style.transform = `translate3d(-${start}px,0,0)`;
         }, 1);
       }
     }
   };
   nextElement = () => {
     if (!this.loading) {
-      const { sliderList } = this.elements;
+      const { sliderTrack } = this.elements;
       if (this.currentElementProxy.value == this.countElement) {
         let start = this.currentElementProxy.value * this.widthElement;
         const int = setInterval(() => {
           this.loading = true;
           start += this.speed;
           if (start == (this.currentElementProxy.value + 1) * this.widthElement) {
-            sliderList.style.transform = `translate3d(-${this.elementWidth}px,0,0)`;
+            sliderTrack.style.transform = `translate3d(-${this.elementWidth}px,0,0)`;
             this.currentElementProxy.value = 1;
             this.loading = false;
             clearInterval(int);
           }
-          sliderList.style.transform = `translate3d(-${start}px,0,0)`;
+          sliderTrack.style.transform = `translate3d(-${start}px,0,0)`;
         }, 1);
       } else {
         this.currentElementProxy.value++;
@@ -144,7 +155,7 @@ class Slider {
             this.loading = false;
             clearInterval(int);
           }
-          sliderList.style.transform = `translate3d(-${start}px,0,0)`;
+          sliderTrack.style.transform = `translate3d(-${start}px,0,0)`;
         }, 1);
       }
     }
@@ -185,7 +196,7 @@ class Slider {
   };
   changeSlide = (number) => {
     if (number == this.currentElementProxy.value) return;
-    const { sliderList } = this.elements;
+    const { sliderTrack } = this.elements;
     if (number > this.currentElementProxy.value) {
       let start = this.currentElementProxy.value * this.widthElement;
       const int = setInterval(() => {
@@ -195,7 +206,7 @@ class Slider {
           this.loading = false;
           clearInterval(int);
         }
-        sliderList.style.transform = `translate3d(-${start}px,0,0)`;
+        sliderTrack.style.transform = `translate3d(-${start}px,0,0)`;
       }, 1);
       this.currentElementProxy.value = number;
     } else {
@@ -207,7 +218,7 @@ class Slider {
           this.loading = false;
           clearInterval(int);
         }
-        sliderList.style.transform = `translate3d(-${start}px,0,0)`;
+        sliderTrack.style.transform = `translate3d(-${start}px,0,0)`;
       }, 1);
       this.currentElementProxy.value = number;
     }
