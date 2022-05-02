@@ -90,67 +90,63 @@ class Slider {
   prevElement = () => {
     if (!this.loading) {
       const { sliderList } = this.elements;
-      requestAnimationFrame(() => {
-        if (this.currentElementProxy.value == 1) {
-          let start = this.currentElementProxy.value * this.widthElement;
-          const int = setInterval(() => {
-            this.loading = true;
-            start -= this.speed;
-            if (start == 0) {
-              sliderList.style.transform = `translate3d(-${this.elementWidth * this.countElement}px,0,0)`;
-              this.currentElementProxy.value = this.countElement;
-              this.loading = false;
-              clearInterval(int);
-            }
-            sliderList.style.transform = `translate3d(-${start}px,0,0)`;
-          }, 1);
-        } else {
-          let start = this.currentElementProxy.value * this.widthElement;
-          const int = setInterval(() => {
-            this.loading = true;
-            start -= this.speed;
-            if (start == (this.currentElementProxy.value - 1) * this.widthElement) {
-              this.currentElementProxy.value--;
-              this.loading = false;
-              clearInterval(int);
-            }
-            sliderList.style.transform = `translate3d(-${start}px,0,0)`;
-          }, 1);
-        }
-      });
+      if (this.currentElementProxy.value == 1) {
+        let start = this.currentElementProxy.value * this.widthElement;
+        const int = setInterval(() => {
+          this.loading = true;
+          start -= this.speed;
+          if (start == 0) {
+            sliderList.style.transform = `translate3d(-${this.elementWidth * this.countElement}px,0,0)`;
+            this.currentElementProxy.value = this.countElement;
+            this.loading = false;
+            clearInterval(int);
+          }
+          sliderList.style.transform = `translate3d(-${start}px,0,0)`;
+        }, 1);
+      } else {
+        let start = this.currentElementProxy.value * this.widthElement;
+        const int = setInterval(() => {
+          this.loading = true;
+          start -= this.speed;
+          if (start == (this.currentElementProxy.value - 1) * this.widthElement) {
+            this.currentElementProxy.value--;
+            this.loading = false;
+            clearInterval(int);
+          }
+          sliderList.style.transform = `translate3d(-${start}px,0,0)`;
+        }, 1);
+      }
     }
   };
   nextElement = () => {
     if (!this.loading) {
       const { sliderList } = this.elements;
-      requestAnimationFrame(() => {
-        if (this.currentElementProxy.value == this.countElement) {
-          let start = this.currentElementProxy.value * this.widthElement;
-          const int = setInterval(() => {
-            this.loading = true;
-            start += this.speed;
-            if (start == (this.currentElementProxy.value + 1) * this.widthElement) {
-              sliderList.style.transform = `translate3d(-${this.elementWidth}px,0,0)`;
-              this.currentElementProxy.value = 1;
-              this.loading = false;
-              clearInterval(int);
-            }
-            sliderList.style.transform = `translate3d(-${start}px,0,0)`;
-          }, 1);
-        } else {
-          this.currentElementProxy.value++;
-          let start = (this.currentElementProxy.value - 1) * this.widthElement;
-          const int = setInterval(() => {
-            this.loading = true;
-            start += this.speed;
-            if (start == this.currentElementProxy.value * this.widthElement) {
-              this.loading = false;
-              clearInterval(int);
-            }
-            sliderList.style.transform = `translate3d(-${start}px,0,0)`;
-          }, 1);
-        }
-      });
+      if (this.currentElementProxy.value == this.countElement) {
+        let start = this.currentElementProxy.value * this.widthElement;
+        const int = setInterval(() => {
+          this.loading = true;
+          start += this.speed;
+          if (start == (this.currentElementProxy.value + 1) * this.widthElement) {
+            sliderList.style.transform = `translate3d(-${this.elementWidth}px,0,0)`;
+            this.currentElementProxy.value = 1;
+            this.loading = false;
+            clearInterval(int);
+          }
+          sliderList.style.transform = `translate3d(-${start}px,0,0)`;
+        }, 1);
+      } else {
+        this.currentElementProxy.value++;
+        let start = (this.currentElementProxy.value - 1) * this.widthElement;
+        const int = setInterval(() => {
+          this.loading = true;
+          start += this.speed;
+          if (start == this.currentElementProxy.value * this.widthElement) {
+            this.loading = false;
+            clearInterval(int);
+          }
+          sliderList.style.transform = `translate3d(-${start}px,0,0)`;
+        }, 1);
+      }
     }
   };
   deleteActiveDot = () => {
@@ -190,33 +186,31 @@ class Slider {
   changeSlide = (number) => {
     if (number == this.currentElementProxy.value) return;
     const { sliderList } = this.elements;
-    requestAnimationFrame(() => {
-      if (number > this.currentElementProxy.value) {
-        let start = this.currentElementProxy.value * this.widthElement;
-        const int = setInterval(() => {
-          this.loading = true;
-          start += this.speed * 2;
-          if (start == number * this.widthElement) {
-            this.loading = false;
-            clearInterval(int);
-          }
-          sliderList.style.transform = `translate3d(-${start}px,0,0)`;
-        }, 1);
-        this.currentElementProxy.value = number;
-      } else {
-        let start = this.currentElementProxy.value * this.widthElement;
-        const int = setInterval(() => {
-          this.loading = true;
-          start -= this.speed * 2;
-          if (start == number * this.widthElement) {
-            this.loading = false;
-            clearInterval(int);
-          }
-          sliderList.style.transform = `translate3d(-${start}px,0,0)`;
-        }, 1);
-        this.currentElementProxy.value = number;
-      }
-    });
+    if (number > this.currentElementProxy.value) {
+      let start = this.currentElementProxy.value * this.widthElement;
+      const int = setInterval(() => {
+        this.loading = true;
+        start += this.speed * 2;
+        if (start == number * this.widthElement) {
+          this.loading = false;
+          clearInterval(int);
+        }
+        sliderList.style.transform = `translate3d(-${start}px,0,0)`;
+      }, 1);
+      this.currentElementProxy.value = number;
+    } else {
+      let start = this.currentElementProxy.value * this.widthElement;
+      const int = setInterval(() => {
+        this.loading = true;
+        start -= this.speed * 2;
+        if (start == number * this.widthElement) {
+          this.loading = false;
+          clearInterval(int);
+        }
+        sliderList.style.transform = `translate3d(-${start}px,0,0)`;
+      }, 1);
+      this.currentElementProxy.value = number;
+    }
   };
 }
 
